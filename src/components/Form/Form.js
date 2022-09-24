@@ -1,63 +1,55 @@
 import PropTypes from 'prop-types';
-import React from 'react';
-import { nanoid } from "nanoid";
+import {useState} from 'react';
 import { FormLabel, FormRequest } from './Form.styled';
 
-export class Form extends React.Component {
-    state = {
-        name: "",
-        number: ""
-    }
+export const Form = ({formSubmitHandler}) => {
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
 
-
-    nameInputId = nanoid();
-    numberInputId = nanoid();
-
-
-    handleChange = e => {
+    const handleChange = e => {
         const { name, value } = e.currentTarget;
-        this.setState({
-            [name]: value,
-        })
-    }
+        switch (name) {
+            case 'name':
+                setName(value);
+                break;
 
-    handleSubmit = e => {
+            case 'number':
+                setNumber(value);
+                break;
+
+            default:
+                break;
+        }
+    };
+
+    const handleSubmit = e => {
         e.preventDefault();
-
-        this.props.onSubmit(this.state)
-
-        this.reset();
-    }
-
-    reset = () => {
-        this.setState({ name: "", number: ""})
-    }
-    
-    render() {
+        formSubmitHandler(name, number);
+        setName('');
+        setNumber('');
+    };
         return ( 
-            <FormRequest onSubmit={this.handleSubmit} >
-                <FormLabel htmlFor={this.nameInputId}> Name
+            <FormRequest onSubmit={handleSubmit} >
+                <FormLabel> Name
                     <input
                         type="text"
                         name="name"
                         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                         required
-                        value={this.state.name}
-                        onChange={this.handleChange}
-                        id={this.nameInputId}
+                        value={name}
+                        onChange={handleChange}
                     />                    
                 </FormLabel>
-                <FormLabel htmlFor={this.numberInputId}> Number
+                <FormLabel > Number
                     <input
                         type="tel"
                         name="number"
                         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                         required
-                        value={this.state.number}
-                        onChange={this.handleChange}
-                        id={this.numberInputId}
+                        value={number}
+                        onChange={handleChange}
                         />
                 </FormLabel>
 
@@ -66,7 +58,6 @@ export class Form extends React.Component {
         );
     }
 
-}
 Form.propTypes = {
-    onSubmit: PropTypes.func.isRequired
+    formSubmitHandler: PropTypes.func.isRequired
 }
